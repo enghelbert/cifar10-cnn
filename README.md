@@ -167,5 +167,58 @@ validación. Al final se evalúa en el conjunto de prueba, se guardan `loss_accu
 ### Resultados
 
 <!-- RESULTADOS_INICIO -->
-_Esta sección se completa automáticamente al ejecutar `python src/train.py`._
+> Resultados generados automáticamente por `src/train.py` el 2026-10-28 21:33 con semilla **68**,
+> 15 épocas, batch 128, Adam (lr = 0.001), dispositivo `cpu`.
+
+**Exactitud en el conjunto de prueba (10 000 imágenes): 78.72%**
+(línea base aleatoria: 10%).
+
+| Época | Train loss | Train acc | Val loss | Val acc |
+|---:|---:|---:|---:|---:|
+| 1 | 1.6864 | 37.89% | 1.3775 | 51.06% |
+| 2 | 1.3618 | 50.55% | 1.1488 | 57.66% |
+| 3 | 1.2044 | 57.01% | 1.0175 | 63.96% |
+| 4 | 1.0783 | 61.96% | 0.9590 | 66.60% |
+| 5 | 0.9907 | 65.52% | 0.8551 | 70.06% |
+| 6 | 0.9296 | 67.55% | 0.7857 | 72.32% |
+| 7 | 0.8820 | 69.28% | 0.7610 | 73.18% |
+| 8 | 0.8407 | 70.68% | 0.7286 | 74.36% |
+| 9 | 0.8010 | 72.15% | 0.6820 | 76.22% |
+| 10 | 0.7791 | 73.04% | 0.6835 | 75.68% |
+| 11 | 0.7546 | 73.89% | 0.6752 | 75.38% |
+| 12 | 0.7339 | 74.72% | 0.6587 | 76.92% |
+| 13 | 0.7179 | 75.12% | 0.6726 | 76.74% |
+| 14 | 0.7007 | 75.69% | 0.6327 | 77.86% |
+| 15 | 0.6871 | 76.12% | 0.6099 | 78.44% |
+
+Métricas por clase en prueba (ordenadas de peor a mejor F1):
+
+| Clase | Precisión | Recall | F1 |
+|---|---:|---:|---:|
+| gato | 63.1% | 58.2% | 60.6% |
+| pájaro | 62.2% | 73.7% | 67.5% |
+| perro | 71.0% | 69.4% | 70.2% |
+| ciervo | 79.9% | 72.0% | 75.7% |
+| avión | 81.9% | 81.3% | 81.6% |
+| caballo | 81.2% | 83.9% | 82.5% |
+| rana | 83.3% | 84.0% | 83.7% |
+| camión | 89.1% | 83.8% | 86.4% |
+| barco | 90.2% | 88.5% | 89.3% |
+| automóvil | 87.3% | 92.4% | 89.8% |
+
+#### Análisis crítico
+
+1. **Diagnóstico de ajuste.** El modelo **no muestra overfitting ni underfitting significativos**: la brecha entre entrenamiento y validación es de -2.32 pp en exactitud y -0.0773 en pérdida, y la pérdida de validación tuvo su mínimo en la época 15 (0.6099), terminando en 0.6099. Que la exactitud de validación sea similar o incluso mayor que la de entrenamiento se explica porque el entrenamiento se mide sobre imágenes aumentadas (RandomCrop/Flip) y con Dropout activo, lo que las hace más difíciles. Como ambas curvas siguen mejorando, entrenar más épocas probablemente subiría la exactitud.
+2. **Generalización.** La exactitud final de validación fue 78.44% y la de prueba
+   78.72%. La diferencia de 0.28 pp
+   indica que la validación estratificada fue un buen estimador del rendimiento sobre datos nunca vistos.
+3. **Clases.** La clase con mejor F1 es **automóvil** (89.8%) y la peor es
+   **gato** (60.6%). La confusión más frecuente es **gato → perro**
+   (161 imágenes), típico entre clases visualmente parecidas a 32×32 píxeles.
+4. **Mejoras posibles.** Añadir BatchNorm, una segunda convolución por bloque, scheduler de tasa de
+   aprendizaje y más épocas; si la validación empieza a empeorar, aplicar early stopping.
+
+![Curvas de aprendizaje](outputs/loss_accuracy.png)
+
+![Matriz de confusión](outputs/confusion_matrix.png)
 <!-- RESULTADOS_FIN -->
